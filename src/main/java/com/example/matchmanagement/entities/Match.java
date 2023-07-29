@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
@@ -38,7 +37,7 @@ public class Match {
     @Column(name = "team_b")
     private String teamB;
     @Column(name = "sport")
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Sport sport;
 
     @OneToMany(mappedBy="match", cascade = CascadeType.ALL)

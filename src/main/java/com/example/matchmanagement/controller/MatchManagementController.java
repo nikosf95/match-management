@@ -1,7 +1,10 @@
 package com.example.matchmanagement.controller;
 
+import com.example.matchmanagement.exception.InvalidRequestException;
+import com.example.matchmanagement.exception.MatchListNotFoundException;
 import com.example.matchmanagement.exception.MatchNotFoundException;
 import com.example.matchmanagement.model.MatchDto;
+import com.example.matchmanagement.model.MatchOddsDto;
 import com.example.matchmanagement.service.MatchManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/match")
@@ -23,21 +27,34 @@ public class MatchManagementController {
     MatchManagementService matchManagementService;
 
     @PostMapping("/")
-    public ResponseEntity<MatchDto> createMatch(@RequestBody MatchDto request) {
+    public ResponseEntity<?> createMatch(@RequestBody MatchDto request) {
         log.info("Creating match: " + request);
-        return new ResponseEntity<>(matchManagementService.createMatch(request), HttpStatus.CREATED);
+       List<MatchOddsDto> matchOddsDtoList = request.getOdds().stream()
+               .filter(o -> o.getSpecifier().equalsIgnoreCase("1") || o.getSpecifier().equalsIgnoreCase("2") || o.getSpecifier().equalsIgnoreCase("X"))
+               .collect(Collectors.toList());
+        if (!matchOddsDtoList.isEmpty()) {
+            matchManagementService.createMatch(request);
+            return new ResponseEntity<>(null, HttpStatus.CREATED);
+        } else {
+            throw new InvalidRequestException("Specifier field must be 1, 2 or X");
+        }
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<MatchDto>> getAllMatches() {
-        log.info("Fetching all amtches");
-        return new ResponseEntity<>(matchManagementService.getAllMatches(), HttpStatus.OK);
+        log.info("Fetching all matches");
+        List<MatchDto> matchDtoList = matchManagementService.getAllMatches();
+        if (!Objects.isNull(matchDtoList) && !matchDtoList.isEmpty()) {
+            return new ResponseEntity<>(matchDtoList, HttpStatus.OK);
+        } else {
+            throw new MatchListNotFoundException();
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MatchDto> getMatchById(@PathVariable int id) {
         log.info("Fetching match by id: " + id);
-        var result = matchManagementService.getMatchById(id);
+        MatchDto result = matchManagementService.getMatchById(id);
         if (!Objects.isNull(result)) {
             return new ResponseEntity<>(matchManagementService.getMatchById(id), HttpStatus.OK);
         } else {
@@ -48,7 +65,7 @@ public class MatchManagementController {
     @DeleteMapping("/{id}")
     public ResponseEntity<MatchDto> deleteMatchById(@PathVariable int id) {
         log.info("Deleting match by id: " + id);
-        var result = matchManagementService.getMatchById(id);
+        MatchDto result = matchManagementService.deleteMatchById(id);
         if (!Objects.isNull(result)) {
             return new ResponseEntity<>(result, HttpStatus.OK);
 
@@ -56,5 +73,18 @@ public class MatchManagementController {
             throw new MatchNotFoundException(id);
         }
 
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<MatchDto> updateMatchByID(@PathVariable int id,
+                                                    @RequestBody MatchDto request) {
+        log.info("Updating match by id: " + id + " with new variables: " + request);
+        MatchDto result = matchManagementService.updateMatchById(id, request);
+        if (!Objects.isNull(result)) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        } else {
+            throw new MatchNotFoundException(id);
+        }
     }
 }

@@ -1,7 +1,5 @@
 package com.example.matchmanagement.exception;
 
-import lombok.Data;
-
 public class MatchNotFoundException extends RuntimeException {
     private int matchId;
 

@@ -33,7 +33,7 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        errorResponse.setMessage("An unexpected error occurred.");
+        errorResponse.setMessage(ex.getMessage());
         errorResponse.setTimestamp(System.currentTimeMillis());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);

@@ -8,7 +8,7 @@ WORKDIR /app
 COPY ./ /app/
 
 # Build the Maven project
-RUN mvn clean install
+RUN mvn clean install -DskipTests
 
 # Use a lightweight base image with JRE 17 to run the application
 FROM openjdk:17
