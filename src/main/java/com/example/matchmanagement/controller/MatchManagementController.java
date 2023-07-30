@@ -9,6 +9,8 @@ import com.example.matchmanagement.service.MatchManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,7 @@ public class MatchManagementController {
     MatchManagementService matchManagementService;
 
     @PostMapping("/")
+    @CacheEvict(value = "matches", allEntries = true)
     public ResponseEntity<?> createMatch(@RequestBody MatchDto request) {
         log.info("Creating match: " + request);
        List<MatchOddsDto> matchOddsDtoList = request.getOdds().stream()
@@ -41,6 +44,7 @@ public class MatchManagementController {
     }
 
     @GetMapping("/all")
+    @Cacheable("matches")
     public ResponseEntity<List<MatchDto>> getAllMatches() {
         log.info("Fetching all matches");
         List<MatchDto> matchDtoList = matchManagementService.getAllMatches();
@@ -63,6 +67,7 @@ public class MatchManagementController {
     }
 
     @DeleteMapping("/{id}")
+    @CacheEvict(value = "matches", allEntries = true)
     public ResponseEntity<MatchDto> deleteMatchById(@PathVariable int id) {
         log.info("Deleting match by id: " + id);
         MatchDto result = matchManagementService.deleteMatchById(id);
@@ -75,7 +80,22 @@ public class MatchManagementController {
 
     }
 
+    @DeleteMapping("/odds")
+    @CacheEvict(value = "matches", allEntries = true)
+    public ResponseEntity<?> deleteOdds(@RequestBody List<Integer> matchOddsIds) {
+        log.info("Deleting odds: " + matchOddsIds);
+        List<Integer> result = matchManagementService.deleteMatchOdds(matchOddsIds);
+        if (!Objects.isNull(result)) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        } else {
+            throw new InvalidRequestException("Wrong odds ids.");
+        }
+
+    }
+
     @PatchMapping("/{id}")
+    @CacheEvict(value = "matches", allEntries = true)
     public ResponseEntity<MatchDto> updateMatchByID(@PathVariable int id,
                                                     @RequestBody MatchDto request) {
         log.info("Updating match by id: " + id + " with new variables: " + request);

@@ -12,10 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import java.util.ArrayList;
@@ -140,6 +137,20 @@ public class MatchManagementIntegrationTest {
 
     @Test
     @Order(4)
+    public void testDeleteMatchOdd() {
+
+        List<Integer> matchOdds = new ArrayList<>();
+        matchOdds.add(1);
+        String baseUrl = "http://localhost:" + port + "/api/v1/match/odds";
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<List<Integer>> requestEntity = new HttpEntity<>(matchOdds, headers);
+        ResponseEntity<Void> resp = restTemplate.exchange(baseUrl, HttpMethod.DELETE, requestEntity, Void.class);
+
+        assertEquals(HttpStatus.OK, resp.getStatusCode());
+    }
+
+    @Test
+    @Order(5)
     public void testDeleteMatch() {
 
         int matchId = 2;

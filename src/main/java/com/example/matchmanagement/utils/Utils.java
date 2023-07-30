@@ -39,25 +39,6 @@ public class Utils {
             match.setSport(matchDto.getSport());
         }
 
-        if (matchDto.getOdds() != null && !matchDto.getOdds().isEmpty()) {
-
-            List<MatchOdds> oddsList = mapToMatchOddsList(matchDto.getOdds());
-            match.setOdds(oddsList);
-        }
         return match;
-    }
-
-    public List<MatchOdds> mapToMatchOddsList(List<MatchOddsDto> matchOddsDtoList) {
-        return matchOddsDtoList
-                .stream()
-                .map(this::mapToMatchOdds)
-                .collect(Collectors.toList());
-    }
-
-    private MatchOdds mapToMatchOdds(MatchOddsDto matchOddsDto) {
-        MatchOdds matchOdds = new MatchOdds();
-        matchOdds.setOdd(matchOddsDto.getOdd());
-        matchOdds.setOdd(matchOddsDto.getOdd());
-        return matchOdds;
     }
 }

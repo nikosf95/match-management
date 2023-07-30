@@ -1,6 +1,7 @@
 package com.example.matchmanagement.service;
 
 import com.example.matchmanagement.model.MatchDto;
+import com.example.matchmanagement.model.MatchOddsDto;
 
 import java.util.List;
 
@@ -14,4 +15,6 @@ public interface MatchManagementService {
     MatchDto deleteMatchById(int id);
 
     MatchDto updateMatchById(int id, MatchDto match);
+
+    List<Integer> deleteMatchOdds(List<Integer> matchOddsIds);
 }

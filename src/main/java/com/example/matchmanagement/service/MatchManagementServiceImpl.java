@@ -3,10 +3,14 @@ package com.example.matchmanagement.service;
 import com.example.matchmanagement.entities.Match;
 import com.example.matchmanagement.entities.MatchOdds;
 import com.example.matchmanagement.model.MatchDto;
+import com.example.matchmanagement.model.MatchOddsDto;
+import com.example.matchmanagement.repository.MatchOddsRepository;
 import com.example.matchmanagement.repository.MatchRepository;
 import com.example.matchmanagement.utils.Utils;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,9 @@ public class MatchManagementServiceImpl implements MatchManagementService {
 
     @Autowired
     MatchRepository matchRepository;
+
+    @Autowired
+    MatchOddsRepository matchOddsRepository;
     @Autowired
     ModelMapper modelMapper;
 
@@ -75,12 +82,37 @@ public class MatchManagementServiceImpl implements MatchManagementService {
     public MatchDto updateMatchById(int id, MatchDto match) {
         Optional<Match> existingMatch = matchRepository.findById(id);
         if (!existingMatch.isEmpty()) {
-            Match matchEntity = utils.updateMatchFromMatchDto(existingMatch.get(), match);
-            matchRepository.save(matchEntity);
-            MatchDto matchDto = modelMapper.map(existingMatch.get(), MatchDto.class);
+           Match updatedMatch = utils.updateMatchFromMatchDto(existingMatch.get(), match);
+            List<MatchOddsDto> oddsList = match.getOdds();
+            if (oddsList != null) {
+                for (MatchOddsDto oddsDto : oddsList) {
+                    MatchOdds existingOdds = updatedMatch.getOdds().stream()
+                            .filter(odds -> odds.getId() == oddsDto.getId())
+                            .findFirst()
+                            .orElse(null);
+                    if (existingOdds != null) {
+                        BeanUtils.copyProperties(oddsDto, existingOdds);
+                    }
+                }
+            }
+
+            matchRepository.save(updatedMatch);
+            MatchDto matchDto = modelMapper.map(updatedMatch, MatchDto.class);
             return matchDto;
         } else {
             return null;
+        }
+    }
+
+    @Override
+    @Transactional
+    public List<Integer> deleteMatchOdds(List<Integer> matchOddsIds) {
+
+        try {
+            matchOddsRepository.deleteByIdIn(matchOddsIds);
+            return matchOddsIds;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 }

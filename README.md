@@ -27,10 +27,11 @@ To get started with this project, follow the instructions below.
 ### API Endpoints
 
 - `GET /api/v1/match/all`: Get all matches.
-- `GET /api/v1/match/{id}`: Get a match by ID.
+- `GET /api/v1/match/{id}`: Get a match by id.
 - `POST /api/v1/match`: Create a new match.
 - `PUT /api/v1/match/{id}`: Update an existing match.
-- `DELETE /api/v1/match/{id}`: Delete a match by ID.
+- `DELETE /api/v1/match/{id}`: Delete a match by id.
+- `DELETE /api/v1/match/odds`: Delete odds by using a list of ids.
 ## API Documentation
 
 You can access the API documentation and test the endpoints using Swagger UI:
@@ -61,3 +62,4 @@ The MatchOdds object has the following properties:
 
 - When a resource is not found, the API will return a 404 Not Found response.
 - For invalid requests or data, the API will return a 400 Bad Request response.
+- In other cases, the API will return a 500 Interval Server Error followed by the exception message.
