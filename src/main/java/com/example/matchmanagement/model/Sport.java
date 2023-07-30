@@ -1,6 +1,7 @@
 package com.example.matchmanagement.model;
 
 public enum Sport {
+    None(0),
     Football(1),
     Basketball(2);
 

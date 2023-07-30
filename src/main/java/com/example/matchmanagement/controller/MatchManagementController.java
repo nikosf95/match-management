@@ -5,6 +5,7 @@ import com.example.matchmanagement.exception.MatchListNotFoundException;
 import com.example.matchmanagement.exception.MatchNotFoundException;
 import com.example.matchmanagement.model.MatchDto;
 import com.example.matchmanagement.service.MatchManagementService;
+import com.example.matchmanagement.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,16 @@ public class MatchManagementController {
     @Autowired
     MatchManagementService matchManagementService;
 
+    @Autowired
+    Utils utils;
+
     @PostMapping("/")
     @CacheEvict(value = "matches", allEntries = true)
     public ResponseEntity<?> createMatch(@RequestBody MatchDto request) {
         log.info("Creating match: " + request);
-            matchManagementService.createMatch(request);
-            return new ResponseEntity<>(null, HttpStatus.CREATED);
+        utils.validateRequest(request);
+        matchManagementService.createMatch(request);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/all")
@@ -90,6 +95,7 @@ public class MatchManagementController {
     public ResponseEntity<MatchDto> updateMatchByID(@PathVariable int id,
                                                     @RequestBody MatchDto request) {
         log.info("Updating match by id: " + id + " with new variables: " + request);
+        utils.validateRequest(request);
         MatchDto result = matchManagementService.updateMatchById(id, request);
         if (!Objects.isNull(result)) {
             return new ResponseEntity<>(result, HttpStatus.OK);

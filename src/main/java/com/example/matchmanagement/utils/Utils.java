@@ -2,12 +2,15 @@ package com.example.matchmanagement.utils;
 
 import com.example.matchmanagement.entities.Match;
 import com.example.matchmanagement.entities.MatchOdds;
+import com.example.matchmanagement.exception.InvalidRequestException;
 import com.example.matchmanagement.model.MatchDto;
 import com.example.matchmanagement.model.MatchOddsDto;
 import com.example.matchmanagement.model.Sport;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -16,27 +19,27 @@ public class Utils {
 
     public Match updateMatchFromMatchDto(Match match, MatchDto matchDto) {
 
-        if (matchDto.getDescription() != null) {
+        if (StringUtils.hasText(matchDto.getDescription())) {
             match.setDescription(matchDto.getDescription());
         }
 
-        if (matchDto.getMatchDate() != null) {
+        if (!Objects.isNull(matchDto.getMatchDate())) {
             match.setMatchDate(matchDto.getMatchDate());
         }
 
-        if (matchDto.getMatchTime() != null) {
+        if (!Objects.isNull(matchDto.getMatchTime())) {
             match.setMatchTime(matchDto.getMatchTime());
         }
 
-        if (matchDto.getTeamA() != null) {
+        if (StringUtils.hasText(matchDto.getTeamA())) {
             match.setTeamA(matchDto.getTeamA());
         }
 
-        if (matchDto.getTeamB() != null) {
+        if (StringUtils.hasText(matchDto.getTeamB())) {
             match.setTeamB(matchDto.getTeamB());
         }
 
-        if (matchDto.getSport() != null) {
+        if (StringUtils.hasText(matchDto.getSport())) {
             match.setSport(Sport.valueOf(matchDto.getSport()));
         }
 
@@ -85,4 +88,18 @@ public class Utils {
                 .build();
     }
 
+    public void validateRequest(MatchDto matchDto) {
+        if (!StringUtils.hasText(matchDto.getSport()) || !(matchDto.getSport().equalsIgnoreCase("1") || matchDto.getSport().equalsIgnoreCase("2"))) {
+            throw new InvalidRequestException("Sport should have values 1 (for Football) or 2 (for Basketball)");
+        }
+        if (!Objects.isNull(matchDto.getOdds()) && !matchDto.getOdds().isEmpty()) {
+            List<MatchOddsDto> matchOddsDtoList = matchDto.getOdds().stream()
+                    .filter(o -> o.getSpecifier().equalsIgnoreCase("1") || o.getSpecifier().equalsIgnoreCase("2") || o.getSpecifier().equalsIgnoreCase("X"))
+                    .collect(Collectors.toList());
+            if (matchOddsDtoList.isEmpty()) {
+                throw new InvalidRequestException("Specifier field must be 1, 2 or X");
+            }
+        }
+
+    }
 }

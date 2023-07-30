@@ -38,13 +38,6 @@ public class MatchManagementServiceImpl implements MatchManagementService {
     @Override
     public void createMatch(MatchDto request) {
 
-        List<MatchOddsDto> matchOddsDtoList = request.getOdds().stream()
-                .filter(o -> o.getSpecifier().equalsIgnoreCase("1") || o.getSpecifier().equalsIgnoreCase("2") || o.getSpecifier().equalsIgnoreCase("X"))
-                .collect(Collectors.toList());
-        if (matchOddsDtoList.isEmpty()) {
-            throw new InvalidRequestException("Specifier field must be 1, 2 or X");
-            }
-
         Match matchEntity = Utils.matchDtoToEntity(request);
         List<MatchOdds> matchOddsList = request.getOdds()
                 .stream()

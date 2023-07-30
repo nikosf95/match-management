@@ -37,7 +37,7 @@ public class Match {
     @Column(name = "team_b")
     private String teamB;
     @Column(name = "sport")
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Sport sport;
 
     @OneToMany(mappedBy="match", cascade = CascadeType.ALL)
