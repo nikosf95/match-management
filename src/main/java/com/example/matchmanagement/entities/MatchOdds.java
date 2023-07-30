@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class MatchOdds {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="match_id", nullable=false)

@@ -22,7 +22,7 @@ import java.util.List;
 public class Match {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
     @Column(name = "description")
     private String description;
@@ -37,7 +37,7 @@ public class Match {
     @Column(name = "team_b")
     private String teamB;
     @Column(name = "sport")
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Sport sport;
 
     @OneToMany(mappedBy="match", cascade = CascadeType.ALL)

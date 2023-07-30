@@ -3,7 +3,6 @@ package com.example.matchmanagement;
 import com.example.matchmanagement.entities.Match;
 import com.example.matchmanagement.model.MatchDto;
 import com.example.matchmanagement.model.MatchOddsDto;
-import com.example.matchmanagement.model.Sport;
 import com.example.matchmanagement.repository.MatchRepository;
 import org.junit.jupiter.api.*;
 import org.modelmapper.ModelMapper;
@@ -50,7 +49,7 @@ public class MatchManagementIntegrationTest {
         matchOddsDtos.add(matchOddsDto);
 
         MatchDto matchDto = MatchDto.builder()
-                .sport(Sport.FOOTBALL)
+                .sport("1")
                 .teamB("pao")
                 .teamA("OSFP")
                 .id(1)
@@ -67,7 +66,7 @@ public class MatchManagementIntegrationTest {
         secondMatchOddsDtos.add(secondMatchOddsDto);
 
         MatchDto secondMatchDto = MatchDto.builder()
-                .sport(Sport.FOOTBALL)
+                .sport("1")
                 .teamB("pao")
                 .teamA("OSFP")
                 .id(2)
@@ -95,7 +94,7 @@ public class MatchManagementIntegrationTest {
         matchOddsDtos.add(matchOddsDto);
 
         MatchDto matchDto = MatchDto.builder()
-                .sport(Sport.FOOTBALL)
+                .sport("1")
                 .teamB("pao")
                 .teamA("OSFP")
                 .id(3)

@@ -4,7 +4,6 @@ import com.example.matchmanagement.exception.InvalidRequestException;
 import com.example.matchmanagement.exception.MatchListNotFoundException;
 import com.example.matchmanagement.exception.MatchNotFoundException;
 import com.example.matchmanagement.model.MatchDto;
-import com.example.matchmanagement.model.MatchOddsDto;
 import com.example.matchmanagement.service.MatchManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/match")
@@ -32,15 +30,8 @@ public class MatchManagementController {
     @CacheEvict(value = "matches", allEntries = true)
     public ResponseEntity<?> createMatch(@RequestBody MatchDto request) {
         log.info("Creating match: " + request);
-       List<MatchOddsDto> matchOddsDtoList = request.getOdds().stream()
-               .filter(o -> o.getSpecifier().equalsIgnoreCase("1") || o.getSpecifier().equalsIgnoreCase("2") || o.getSpecifier().equalsIgnoreCase("X"))
-               .collect(Collectors.toList());
-        if (!matchOddsDtoList.isEmpty()) {
             matchManagementService.createMatch(request);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
-        } else {
-            throw new InvalidRequestException("Specifier field must be 1, 2 or X");
-        }
     }
 
     @GetMapping("/all")

@@ -1,9 +1,8 @@
 package com.example.matchmanagement.model;
 
 public enum Sport {
-    NULL(0),
-    FOOTBALL(1),
-    BASKETBALL(2);
+    Football(1),
+    Basketball(2);
 
     private final int value;
 

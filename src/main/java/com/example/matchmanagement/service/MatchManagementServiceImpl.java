@@ -2,6 +2,7 @@ package com.example.matchmanagement.service;
 
 import com.example.matchmanagement.entities.Match;
 import com.example.matchmanagement.entities.MatchOdds;
+import com.example.matchmanagement.exception.InvalidRequestException;
 import com.example.matchmanagement.model.MatchDto;
 import com.example.matchmanagement.model.MatchOddsDto;
 import com.example.matchmanagement.repository.MatchOddsRepository;
@@ -14,6 +15,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,7 +37,15 @@ public class MatchManagementServiceImpl implements MatchManagementService {
 
     @Override
     public void createMatch(MatchDto request) {
-        Match matchEntity = modelMapper.map(request, Match.class);
+
+        List<MatchOddsDto> matchOddsDtoList = request.getOdds().stream()
+                .filter(o -> o.getSpecifier().equalsIgnoreCase("1") || o.getSpecifier().equalsIgnoreCase("2") || o.getSpecifier().equalsIgnoreCase("X"))
+                .collect(Collectors.toList());
+        if (matchOddsDtoList.isEmpty()) {
+            throw new InvalidRequestException("Specifier field must be 1, 2 or X");
+            }
+
+        Match matchEntity = Utils.matchDtoToEntity(request);
         List<MatchOdds> matchOddsList = request.getOdds()
                 .stream()
                 .map(matchOddsDto -> modelMapper.map(matchOddsDto, MatchOdds.class))
@@ -49,8 +59,9 @@ public class MatchManagementServiceImpl implements MatchManagementService {
     public List<MatchDto> getAllMatches() {
         List<Match> matchEntities = matchRepository.findAll();
         List<MatchDto> matchDtos = matchEntities.stream()
-                .map(match -> modelMapper.map(match, MatchDto.class))
+                .map(match -> Utils.mapMatchEntitiesToListMatch(match))
                 .collect(Collectors.toList());
+
 
         return matchDtos;
     }
@@ -84,16 +95,19 @@ public class MatchManagementServiceImpl implements MatchManagementService {
         if (!existingMatch.isEmpty()) {
            Match updatedMatch = utils.updateMatchFromMatchDto(existingMatch.get(), match);
             List<MatchOddsDto> oddsList = match.getOdds();
+            List<MatchOdds> updatedOdds = new ArrayList<>();
             if (oddsList != null) {
                 for (MatchOddsDto oddsDto : oddsList) {
                     MatchOdds existingOdds = updatedMatch.getOdds().stream()
                             .filter(odds -> odds.getId() == oddsDto.getId())
                             .findFirst()
-                            .orElse(null);
-                    if (existingOdds != null) {
+                            .orElse(new MatchOdds());
                         BeanUtils.copyProperties(oddsDto, existingOdds);
-                    }
+                    existingOdds.setMatch(updatedMatch);
+                    updatedOdds.add(existingOdds);
+
                 }
+                updatedMatch.setOdds(updatedOdds);
             }
 
             matchRepository.save(updatedMatch);
