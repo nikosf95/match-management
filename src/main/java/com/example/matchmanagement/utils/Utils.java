@@ -6,7 +6,7 @@ import com.example.matchmanagement.exception.InvalidRequestException;
 import com.example.matchmanagement.model.MatchDto;
 import com.example.matchmanagement.model.MatchOddsDto;
 import com.example.matchmanagement.model.Sport;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 
-@Service
+@Component
 public class Utils {
 
     public Match updateMatchFromMatchDto(Match match, MatchDto matchDto) {
@@ -89,7 +89,7 @@ public class Utils {
     }
 
     public void validateRequest(MatchDto matchDto) {
-        if (!StringUtils.hasText(matchDto.getSport()) || !(matchDto.getSport().equalsIgnoreCase("1") || matchDto.getSport().equalsIgnoreCase("2"))) {
+        if (StringUtils.hasText(matchDto.getSport()) && !(matchDto.getSport().equalsIgnoreCase("1") || matchDto.getSport().equalsIgnoreCase("2"))) {
             throw new InvalidRequestException("Sport should have values 1 (for Football) or 2 (for Basketball)");
         }
         if (!Objects.isNull(matchDto.getOdds()) && !matchDto.getOdds().isEmpty()) {
