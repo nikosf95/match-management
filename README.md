@@ -28,7 +28,7 @@ To get started with this project, follow the instructions below.
 
 - `GET /api/v1/match/all`: Get all matches.
 - `GET /api/v1/match/{id}`: Get a match by id.
-- `POST /api/v1/match`: Create a new match.
+- `POST /api/v1/match/`: Create a new match.
 - `PUT /api/v1/match/{id}`: Update an existing match.
 - `DELETE /api/v1/match/{id}`: Delete a match by id.
 - `DELETE /api/v1/match/odds`: Delete odds by using a list of ids.
